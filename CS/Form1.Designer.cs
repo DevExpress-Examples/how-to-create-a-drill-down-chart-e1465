@@ -54,10 +54,12 @@
             this.chartControl1.DataAdapter = this.salesPersonTableAdapter;
             this.chartControl1.DataSource = this.salesPersonBindingSource;
             this.chartControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chartControl1.Legend.Name = "Default Legend";
             this.chartControl1.Location = new System.Drawing.Point(0, 0);
             this.chartControl1.Name = "chartControl1";
             this.chartControl1.RuntimeHitTesting = true;
             series1.ArgumentDataMember = "Sales Person";
+            series1.DateTimeSummaryOptions.SummaryFunction = "SUM([Extended Price])";
             pieSeriesLabel1.Border.Visibility = DevExpress.Utils.DefaultBoolean.False;
             pieSeriesLabel1.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Empty;
             pieSeriesLabel1.LineVisibility = DevExpress.Utils.DefaultBoolean.True;
@@ -66,18 +68,20 @@
             series1.Label = pieSeriesLabel1;
             series1.LegendTextPattern = "{A}";
             series1.Name = "Categories";
+            series1.NumericSummaryOptions.SummaryFunction = "SUM([Extended Price])";
+            series1.QualitativeSummaryOptions.SummaryFunction = "SUM([Extended Price])";
             series1.SeriesPointsSorting = DevExpress.XtraCharts.SortingMode.Ascending;
-            series1.SummaryFunction = "SUM([Extended Price])";
             series1.View = pieSeriesView1;
             series2.ArgumentDataMember = "CategoryName";
-            series2.DataFilters.ClearAndAddRange(new DevExpress.XtraCharts.DataFilter[] {
-            new DevExpress.XtraCharts.DataFilter("Sales Person", "System.String", DevExpress.XtraCharts.DataFilterCondition.Equal, null)});
+            series2.DateTimeSummaryOptions.SummaryFunction = "SUM([Extended Price])";
+            series2.FilterString = "[Sales Person] = ?";
             sideBySideBarSeriesLabel1.LineVisibility = DevExpress.Utils.DefaultBoolean.True;
             series2.Label = sideBySideBarSeriesLabel1;
             series2.Name = "Series 1";
+            series2.NumericSummaryOptions.SummaryFunction = "SUM([Extended Price])";
+            series2.QualitativeSummaryOptions.SummaryFunction = "SUM([Extended Price])";
             series2.SeriesPointsSorting = DevExpress.XtraCharts.SortingMode.Descending;
             series2.SeriesPointsSortingKey = DevExpress.XtraCharts.SeriesPointKey.Value_1;
-            series2.SummaryFunction = "SUM([Extended Price])";
             this.chartControl1.SeriesSerializable = new DevExpress.XtraCharts.Series[] {
         series1,
         series2};
