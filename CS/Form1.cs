@@ -1,63 +1,92 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using DevExpress.Utils;
 using DevExpress.XtraCharts;
-// ...
+using DevExpress.XtraEditors;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace DrillDownChart {
-    public partial class Form1 : Form {
-
-        public Form1 () {
+    public partial class Form1 : XtraForm {
+        List<string> categories;
+        Font linkFont;
+        Font regularFont;
+        ChartControl chartControl { get { return chartControl1; } }
+        public Form1() {
             InitializeComponent();
         }
+        private void Form1_Load(object sender, System.EventArgs e) {
+            var keys = SaleItem.CategorizedProducts.Keys;
+            categories = new List<string>(keys.Count);
+            foreach (string category in SaleItem.CategorizedProducts.Keys)
+                categories.Add(category);
 
-        private void Form1_Load (object sender, EventArgs e) {
-            // TODO: This line of code loads data into the 'nwindDataSet.SalesPerson' table. You can move, or remove it, as needed.
-            this.salesPersonTableAdapter.Fill(this.nwindDataSet.SalesPerson);
+            List<SaleItem> data = SaleItem.GetTotalIncome();
+            chartControl.DataSource = data;
+            chartControl.SeriesTemplate.SeriesDataMember = "Category";
+            chartControl.SeriesTemplate.ArgumentDataMember = "Company";
+            chartControl.SeriesTemplate.QualitativeSummaryOptions.SummaryFunction = "SUM([Income])";
+            chartControl.SeriesTemplate.View = new StackedBarSeriesView();
+
+            SeriesTemplate argumentDrillTemplate = new SeriesTemplate();
+            argumentDrillTemplate.SeriesDataMember = "Category";
+            argumentDrillTemplate.ArgumentDataMember = "OrderDate";
+            argumentDrillTemplate.View = new StackedAreaSeriesView();
+            argumentDrillTemplate.DateTimeSummaryOptions.MeasureUnit = DateTimeMeasureUnit.Month;
+            argumentDrillTemplate.DateTimeSummaryOptions.UseAxisMeasureUnit = false;
+            argumentDrillTemplate.DateTimeSummaryOptions.SummaryFunction = "SUM([Income])";
+            chartControl.SeriesTemplate.ArgumentDrillTemplate = argumentDrillTemplate;
+
+            SeriesTemplate seriesDrillTemplate = new SeriesTemplate();
+            seriesDrillTemplate.SeriesDataMember = "Product";
+            seriesDrillTemplate.ArgumentDataMember = "Company";
+            seriesDrillTemplate.QualitativeSummaryOptions.SummaryFunction = "SUM([Income])";
+            seriesDrillTemplate.View = new StackedBarSeriesView();
+            chartControl.SeriesTemplate.SeriesDrillTemplate = seriesDrillTemplate;
+
+            SeriesTemplate seriesPointDrillTemplate = new SeriesTemplate();
+            seriesPointDrillTemplate.SeriesDataMember = "Product";
+            seriesPointDrillTemplate.ArgumentDataMember = "OrderDate";
+            seriesPointDrillTemplate.DateTimeSummaryOptions.MeasureUnit = DateTimeMeasureUnit.Month;
+            seriesPointDrillTemplate.DateTimeSummaryOptions.UseAxisMeasureUnit = false;
+            seriesPointDrillTemplate.DateTimeSummaryOptions.SummaryFunction = "SUM([Income])";
+            seriesPointDrillTemplate.View = new StackedAreaSeriesView();
+            chartControl.SeriesTemplate.SeriesPointDrillTemplate = seriesPointDrillTemplate;
+
+            if (chartControl.Diagram is XYDiagram diagram) {
+                diagram.Rotated = true;
+                regularFont = diagram.AxisX.Label.Font;
+                linkFont = new Font(regularFont, FontStyle.Underline);
+                diagram.AxisX.Label.Font = linkFont;
+            }
+
+            chartControl.DrillDownStateChanged += chart_DrillDownStateChanged;
         }
 
-        private void chartControl1_MouseClick (object sender, MouseEventArgs e) {
-            // Obtain the object being clicked.
-            ChartHitInfo hi = chartControl1.CalcHitInfo(e.X, e.Y);
-
-            // Check whether it was a series point, and if yes - 
-            // obtain its argument, and pass it to the detail series.
-            SeriesPoint point = hi.SeriesPoint;
-
-            if (point != null) {
-                string argument = point.Argument.ToString();
-
-                // Flip the series.
-                if (chartControl1.Series[0].Visible == true) {
-                    chartControl1.Series[0].Visible = false;
-
-                    chartControl1.Series[1].Name = argument;
-                    chartControl1.Series[1].Visible = true;
-
-                    // Since the new series determines another diagram's type,
-                    // you should re-define axes properties.
-                    XYDiagram diagram = chartControl1.Diagram as XYDiagram;
-                    diagram.AxisY.Label.TextPattern = "{V:c0}";
-
-                    chartControl1.Series[1].DataFilters[0].Value = argument;
-
-                    chartControl1.Titles[0].Visibility = DevExpress.Utils.DefaultBoolean.True;
-                    chartControl1.Titles[1].Text = "Personal Sales by Categories";
+        void chart_DrillDownStateChanged(object sender, DrillDownStateChangedEventArgs e) {
+            if (chartControl.Diagram is XYDiagram diagram && e.Series.Length > 0) {
+                if (e.Series[0].View is StackedBarSeriesView) {
+                    chartControl.CrosshairEnabled = DefaultBoolean.False;
+                    chartControl.ToolTipEnabled = DefaultBoolean.True;
+                    diagram.Rotated = true;
+                    diagram.AxisX.Label.Font = this.linkFont;
+                    diagram.EnableAxisXScrolling = false;
+                    diagram.EnableAxisXZooming = false;
+                }
+                else {
+                    chartControl.CrosshairEnabled = DefaultBoolean.True;
+                    chartControl.ToolTipEnabled = DefaultBoolean.False;
+                    diagram.Rotated = false;
+                    diagram.AxisX.Label.Font = this.regularFont;
+                    diagram.EnableAxisXScrolling = true;
+                    diagram.EnableAxisXZooming = true;
                 }
             }
-
-            // Obtain the title under the test point.
-            ChartTitle link = hi.ChartTitle;
-
-            // Check whether the link was clicked, and if yes - 
-            // restore the main series.
-            if (link != null && link.Text.StartsWith("Back")) {
-                chartControl1.Series[0].Visible = true;
-                chartControl1.Series[1].Visible = false;
-
-                link.Visibility = DevExpress.Utils.DefaultBoolean.False;
-                chartControl1.Titles[1].Text = "Sales by Person";
+            foreach (DrillDownItem item in e.States) {
+                if (item.Parameters.ContainsKey("Category")) {
+                    chartControl.PaletteBaseColorNumber = categories.IndexOf(item.Parameters["Category"].ToString()) + 1;
+                    return;
+                }
             }
+            chartControl.PaletteBaseColorNumber = 0;
         }
-
     }
 }
