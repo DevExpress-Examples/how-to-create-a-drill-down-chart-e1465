@@ -1,4 +1,5 @@
-﻿using DevExpress.Utils;
+﻿using DevExpress.Drawing;
+using DevExpress.Utils;
 using DevExpress.XtraCharts;
 using DevExpress.XtraEditors;
 using System.Collections.Generic;
@@ -7,8 +8,8 @@ using System.Drawing;
 namespace DrillDownChart {
     public partial class Form1 : XtraForm {
         List<string> categories;
-        Font linkFont;
-        Font regularFont;
+        DXFont linkFont;
+        DXFont regularFont;
         ChartControl chartControl { get { return chartControl1; } }
         public Form1() {
             InitializeComponent();
@@ -53,9 +54,9 @@ namespace DrillDownChart {
 
             if (chartControl.Diagram is XYDiagram diagram) {
                 diagram.Rotated = true;
-                regularFont = diagram.AxisX.Label.Font;
-                linkFont = new Font(regularFont, FontStyle.Underline);
-                diagram.AxisX.Label.Font = linkFont;
+                regularFont = diagram.AxisX.Label.DXFont;
+                linkFont = new DXFont(regularFont, DXFontStyle.Underline);
+                diagram.AxisX.Label.DXFont = linkFont;
             }
 
             chartControl.DrillDownStateChanged += chart_DrillDownStateChanged;
@@ -67,7 +68,7 @@ namespace DrillDownChart {
                     chartControl.CrosshairEnabled = DefaultBoolean.False;
                     chartControl.ToolTipEnabled = DefaultBoolean.True;
                     diagram.Rotated = true;
-                    diagram.AxisX.Label.Font = this.linkFont;
+                    diagram.AxisX.Label.DXFont = this.linkFont;
                     diagram.EnableAxisXScrolling = false;
                     diagram.EnableAxisXZooming = false;
                 }
@@ -75,7 +76,7 @@ namespace DrillDownChart {
                     chartControl.CrosshairEnabled = DefaultBoolean.True;
                     chartControl.ToolTipEnabled = DefaultBoolean.False;
                     diagram.Rotated = false;
-                    diagram.AxisX.Label.Font = this.regularFont;
+                    diagram.AxisX.Label.DXFont = this.regularFont;
                     diagram.EnableAxisXScrolling = true;
                     diagram.EnableAxisXZooming = true;
                 }

@@ -1,16 +1,15 @@
-﻿Imports DevExpress.Utils
+﻿Imports DevExpress.Drawing
+Imports DevExpress.Utils
 Imports DevExpress.XtraCharts
 Imports DevExpress.XtraEditors
-Imports System.Collections.Generic
-Imports System.Drawing
 
 Namespace DrillDownChart
     Partial Public Class Form1
         Inherits XtraForm
 
         Private categories As List(Of String)
-        Private linkFont As Font
-        Private regularFont As Font
+        Private linkFont As DXFont
+        Private regularFont As DXFont
         Private ReadOnly Property chartControl() As ChartControl
             Get
                 Return chartControl1
@@ -61,9 +60,9 @@ Namespace DrillDownChart
             Dim diagram As XYDiagram = CType(chartControl.Diagram, XYDiagram)
             If (Not (diagram) Is Nothing) Then
                 diagram.Rotated = True
-                regularFont = diagram.AxisX.Label.Font
-                linkFont = New Font(regularFont, FontStyle.Underline)
-                diagram.AxisX.Label.Font = linkFont
+                regularFont = diagram.AxisX.Label.DXFont
+                linkFont = New DXFont(regularFont, DXFontStyle.Underline)
+                diagram.AxisX.Label.DXFont = linkFont
             End If
 
             AddHandler chartControl.DrillDownStateChanged, AddressOf chart_DrillDownStateChanged
@@ -78,14 +77,14 @@ Namespace DrillDownChart
                     chartControl.CrosshairEnabled = DefaultBoolean.[False]
                     chartControl.ToolTipEnabled = DefaultBoolean.[True]
                     diagram.Rotated = True
-                    diagram.AxisX.Label.Font = Me.linkFont
+                    diagram.AxisX.Label.DXFont = Me.linkFont
                     diagram.EnableAxisXScrolling = False
                     diagram.EnableAxisXZooming = False
                 Else
                     chartControl.CrosshairEnabled = DefaultBoolean.[True]
                     chartControl.ToolTipEnabled = DefaultBoolean.[False]
                     diagram.Rotated = False
-                    diagram.AxisX.Label.Font = Me.regularFont
+                    diagram.AxisX.Label.DXFont = Me.regularFont
                     diagram.EnableAxisXScrolling = True
                     diagram.EnableAxisXZooming = True
                 End If
