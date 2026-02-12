@@ -26,7 +26,7 @@ You can only use the Drill-Down functionality when [chart series](https://docs.d
 
 Refer to the [Drill Down](https://docs.devexpress.com/WindowsForms/120658/controls-and-libraries/chart-control/data-processing/data-providing/drill-down) article for more information.
 <!-- feedback -->
-## Does this example address your development requirements/objectives?
+## Does This Example Address Your Development Requirements/Objectives?
 
 [<img src="https://www.devexpress.com/support/examples/i/yes-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=winforms-chart-drill-down&~~~was_helpful=yes) [<img src="https://www.devexpress.com/support/examples/i/no-button.svg"/>](https://www.devexpress.com/support/examples/survey.xml?utm_source=github&utm_campaign=winforms-chart-drill-down&~~~was_helpful=no)
 
